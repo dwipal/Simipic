@@ -1,0 +1,16 @@
+#include "templates/base.tmpl"
+
+#def body
+    <h1>$title.replace('_', ' ')</h1>
+    <ul>
+    #for $file in $files:
+        <a href="$file['preview_thumbnail']"><img src="$file['large_thumbnail']"/></a>
+    #end for
+    
+    #for $folder in $folders:
+        <li>
+            <a href="/albums?root_id=$folder['id']">$folder['name']</a>
+        </li>
+    #end for
+    </ul>
+#end def

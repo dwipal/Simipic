@@ -2,15 +2,31 @@
 
 #def body
     <h1>$title.replace('_', ' ')</h1>
-    <ul>
-    #for $file in $files:
-        <a href="$file['preview_thumbnail']"><img src="$file['large_thumbnail']"/></a>
-    #end for
+    #if $files:
+        <div id="photogrid">
+        #for $file in $files:
+            <a href="$file.preview_thumbnail"><img class="thumb" src="$file.large_thumbnail"/></a>
+        #end for
+        </div>
+    #end if
     
-    #for $folder in $folders:
-        <li>
-            <a href="/albums?root_id=$folder['id']">$folder['name']</a>
-        </li>
-    #end for
-    </ul>
+    #if $folders:
+        <ul>
+        #for $folder in $folders:
+            <li>
+                <a href="/albums?root_id=$folder.id">$folder.name</a>
+            </li>
+        #end for
+        </ul>
+    #end if
+#end def
+
+#def extra_js
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){    
+            Code.photoSwipe('a', '#photogrid');
+    
+        }, false);
+    </script>
+    
 #end def

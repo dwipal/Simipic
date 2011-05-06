@@ -19,7 +19,7 @@ class Application(tornado.web.Application):
         settings = dict(
             static_path=os.path.join(os.path.dirname(__file__), "static"),
             cookie_secret="32oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
-            login_url="/auth/login",
+            login_url="/auth/landing",
             debug=True,
         )
         tornado.web.Application.__init__(self, handlers, **settings)

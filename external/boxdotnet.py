@@ -255,8 +255,8 @@ class BoxDotNet(object):
 
         if filename == None:
             raise UploadException("filename OR jpegData must be specified")
-
-        # verify key names
+			
+		# verify key names
         for a in arg.keys():
             if a != "api_key" and a != "auth_token" and a != "folder_id" and a != 'share':
                 sys.stderr.write("Box.net api: warning: unknown parameter \"%s\" sent to Box.net.upload\n" % (a))

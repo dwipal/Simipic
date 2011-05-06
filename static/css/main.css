@@ -1,0 +1,10 @@
+html, body{ 
+    font-family: 'Cabin', arial, serif;
+} 
+
+img.thumb {
+    margin: 3px;
+    width: 76px;
+    height: 76px;
+    border: 1px solid #efefef;
+}

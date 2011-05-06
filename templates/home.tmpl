@@ -1,9 +1,13 @@
 #include "templates/base.tmpl"
 
 #def body
-    Hello, $user
+    Hello, $user.name
     
     <br><br>
     You are logged in!
+    
+    <a href="/albums">Go to albums</a>
+    
     <br/>    
 #end def
+

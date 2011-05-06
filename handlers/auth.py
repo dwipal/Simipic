@@ -1,9 +1,14 @@
 import tornado.web
 import tornado.auth
 
+from model.coredata import CoreData
+
 from base import BaseHandler
 
 
+class AuthLandingHandler(BaseHandler):
+    def get(self):
+        return self.render_template("auth_landing")
 class AuthHandler(BaseHandler):
     def get(self):
         self.write('<html><body><form action="/auth/login" method="post">'
@@ -24,9 +29,11 @@ class GoogleAuthHandler(BaseHandler, tornado.auth.GoogleMixin):
             return
         self.authenticate_redirect()
     
+    
     def _on_auth(self, user):
         if not user:
             raise tornado.web.HTTPError(500, "Google auth failed")
+            
         self.set_secure_cookie("user", tornado.escape.json_encode(user))
         self.redirect("/")
 

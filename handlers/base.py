@@ -2,18 +2,24 @@ import tornado.web
 import tornado.escape
 import os
 
+from model.coredata import CoreData
 from Cheetah.Template import Template
 
 class BaseHandler(tornado.web.RequestHandler):
-    def get_current_user(self):
-        current_user = self.get_secure_cookie("user")
-        if not current_user:
-            return None
+    
+    def initialize(self, cdata):
+        self.cdata = cdata
         
-        return current_user
+    def get_current_user(self):
+        #current_user = self.get_secure_cookie("user")
+        #if not current_user:
+        #    return None
+        
+        #return current_user
         
         user_json = self.get_secure_cookie("user")
         if not user_json: return None
+        
         return tornado.escape.json_decode(user_json)
 
 

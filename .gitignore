@@ -1,3 +1,4 @@
 *.pyc
 .datastore/
 nohup.out
+*.swp

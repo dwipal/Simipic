@@ -1,5 +1,8 @@
 #include "templates/base.tmpl"
 
+#def meta
+<META HTTP-EQUIV="Refresh" CONTENT="0; URL=/albums">
+#end def
 #def body
     Hello, $user.name
     
@@ -8,6 +11,6 @@
     
     <a href="/albums">Go to albums</a>
     
-    <br/>    
+    <br/>  
 #end def
 

@@ -34,6 +34,10 @@ class GoogleAuthHandler(BaseHandler, tornado.auth.GoogleMixin):
             raise tornado.web.HTTPError(500, "Google auth failed")
             
         self.set_secure_cookie("user", tornado.escape.json_encode(user))
+        
+        userinfo = {}
+        userinfo['email'] = user.email
+        userinfo['email'] = user.email
         self.redirect("/")
 
 class LogoutHandler(BaseHandler):

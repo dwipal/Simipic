@@ -146,7 +146,10 @@ class XMLNode:
 
 class BoxDotNetError(Exception):
     """Exception class for errors received from Facebook."""
-    pass
+    def __init__(self, status, method):
+		self.status = status
+		self.method = method
+		super(BoxDotNetError, self).__init__("Box.net returned [%s] for action [%s]" % (status, method))
 
 class BoxDotNet(object):
     END_POINT = 'http://www.box.net/api/1.0/rest?'
@@ -186,7 +189,8 @@ class BoxDotNet(object):
         if status == cls.RETURN_CODES[method]:
             return
 
-        raise BoxDotNetError ("Box.net returned [%s] for action [%s]" % (status, method))
+        raise BoxDotNetError(status, method)
+        #raise BoxDotNetError ("Box.net returned [%s] for action [%s]" % (status, method))
 
     def login(self, api_key):
         # get ticket

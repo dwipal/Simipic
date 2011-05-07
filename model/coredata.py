@@ -33,9 +33,13 @@ class CoreData(object):
         ret = authinfo.find_one({'folder_id':folder_id})
         
         
-    def save_folder(self, folder_id, data):
+    def save_folder(self, folder_id, authinfo):
         folders = self.database.folders
         
+        data = {}
+        
         data['folder_id'] = folder_id
-        folders.insert(data)
+        data['username'] = authinfo['username']
+        
+        folders.update({'folder_id':folder_id}, data, True)
 

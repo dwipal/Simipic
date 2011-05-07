@@ -8,3 +8,10 @@ img.thumb {
     height: 76px;
     border: 1px solid #efefef;
 }
+
+
+hr {
+    border: 0; 
+	background-color: #cdcdcd;	
+	height: 1px;	
+}

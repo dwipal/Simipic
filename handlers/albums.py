@@ -12,8 +12,11 @@ class AlbumsHandler(BaseHandler):
     def get(self):
         boxauth = self.cdata.get_auth(self.get_current_user()['email'], "box")
         
-        if boxauth:        
-            return self._get_albums(boxauth)
+        if boxauth:
+            try:
+                return self._get_albums(boxauth)
+            except BoxAuthError, bae:
+                self.redirect("/auth/box")
         else:
             self.redirect("/auth/box")
         

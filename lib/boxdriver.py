@@ -1,5 +1,8 @@
-from external.boxdotnet import BoxDotNet
+from external.boxdotnet import BoxDotNet, BoxDotNetError
 from lib.genericitems import *
+
+class BoxAuthError(Exception):
+    pass
 
 class BoxDriver(object):
     
@@ -15,10 +18,13 @@ class BoxDriver(object):
         
         box = self._get_box_obj_with_ticket()
         
-        boxtree = box.get_account_tree(api_key=self.api_key,
+        try:
+            boxtree = box.get_account_tree(api_key=self.api_key,
                             auth_token = self.authdata['token'], folder_id=root_id,
                             params=["nozip", "onelevel"])
-        
+        except BoxDotNetError, bne:
+            if bne.status == "not_logged_in":
+                raise BoxAuthError()
         
         m = {}
         m['rootfolder'] = self.__get_root_folder(boxtree)

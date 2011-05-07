@@ -25,7 +25,7 @@ class CoreData(object):
         authinfo  = self.database.authinfo
         authdata['service'] = service
         authdata['username'] = username
-        authinfo.insert(authdata)
+        authinfo.update({'username':username, 'service':service}, authdata, True)
         
         
     def get_folder(self, folder_id):

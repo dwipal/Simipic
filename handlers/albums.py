@@ -31,21 +31,26 @@ class AlbumsHandler(BaseHandler):
 class AuthBoxHandler(AlbumsHandler):
     @tornado.web.authenticated
     def get(self):
-        bd = BoxDriver(boxauth)
-        box = bd._get_box_obj_with_ticket()
-        url = "http://www.box.net/api/1.0/auth/%s" % box.ticket
-        self.redirect(url)
+        bd = BoxDriver()
+        bd.init_auth()
+        
+        self.cdata.add_auth(self.get_current_user()['email'], "box", bd.authdata)
+        
+        self.redirect(bd.auth_url)
     
 class AuthBoxDoneHandler(AlbumsHandler):
     @tornado.web.authenticated
     def get(self):
-        box = self._get_box_obj_with_ticket()
-        rsp = box.get_auth_token(api_key=box.api_key, ticket=box.ticket)
-        token = rsp.auth_token[0].elementText
+        authdata = self.cdata.get_auth(self.get_current_user()['email'], "box")
         
-        
-        authdata = {'ticket': box.ticket, 'token': token}        
+        authdata['ticket'] = self.get_argument("ticket", None)
+        authdata['token'] = self.get_argument("auth_token", None)
+
+        print "Adding auth %s"%authdata
         self.cdata.add_auth(self.get_current_user()['email'], "box", authdata)
+        
+        bd = BoxDriver(authdata)
+        bd.init_auth_token()
         
         self.redirect("/albums")
         

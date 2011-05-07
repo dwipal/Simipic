@@ -3,16 +3,20 @@ from lib.genericitems import *
 
 class BoxDriver(object):
     
-    def __init__(self, boxauth):
+    def __init__(self, authdata=None):
         self.api_key = "l6ld3bydad6psc505n4p8uz5j3u3ho7h"
-        self.boxauth = boxauth
+        if authdata:
+            self.authdata = authdata
+            print "Boxdriver authdata %s"%authdata
+        else:
+            self.authdata = {}
     
     def get_content(self, root_id):
         
         box = self._get_box_obj_with_ticket()
         
         boxtree = box.get_account_tree(api_key=self.api_key,
-                            auth_token = self.boxauth['token'], folder_id=root_id,
+                            auth_token = self.authdata['token'], folder_id=root_id,
                             params=["nozip", "onelevel"])
         
         
@@ -72,21 +76,28 @@ class BoxDriver(object):
         
         return folders
 
+    def init_auth(self):
+        self._get_box_obj_with_ticket()
+        
+    def init_auth_token(self):
+        box = self._get_box_obj_with_ticket()
+        rsp = box.get_auth_token(api_key=self.api_key, ticket=self.authdata['ticket'])
+        token = rsp.auth_token[0].elementText
+        
+        self.authdata['token'] = token
+
     def _get_box_obj_with_ticket(self):
         box = BoxDotNet()
-
-        ticket = self.boxauth['ticket']
-        api_key = self.api_key
         
+        ticket = self.authdata.get('ticket', None)
+            
         #print "ticket: %s"%ticket        
         if not ticket:
-            rsp = box.get_ticket (api_key=api_key)
+            rsp = box.get_ticket (api_key=self.api_key)
             ticket = rsp.ticket[0].elementText        
-            self.set_secure_cookie("box_ticket", ticket)
+            self.authdata['ticket'] = ticket
+            print "Generated new ticket %s"%ticket
             
-        box.ticket = ticket
-        box.api_key = api_key
-        
-        box.auth_url = "http://www.box.net/api/1.0/auth/%s" % box.ticket
+        self.auth_url = "http://www.box.net/api/1.0/auth/%s" % ticket
         return box
         

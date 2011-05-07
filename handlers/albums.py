@@ -31,7 +31,8 @@ class AlbumsHandler(BaseHandler):
 class AuthBoxHandler(AlbumsHandler):
     @tornado.web.authenticated
     def get(self):
-        box = self._get_box_obj_with_ticket()
+        bd = BoxDriver(boxauth)
+        box = bd._get_box_obj_with_ticket()
         url = "http://www.box.net/api/1.0/auth/%s" % box.ticket
         self.redirect(url)
     

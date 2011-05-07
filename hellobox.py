@@ -8,7 +8,9 @@ import os
 from tornado.options import define, options
 
 define("port", default=8888, help="run on the given port", type=int)
-define("host", default='', help="host/ip to bind", type=str)
+define("host", default='0.0.0.0', help="host/ip to bind", type=str)
+define("config", default='development.conf', help="config file name", type=str)
+define("box_api_key", default='', help="api key for box.net", type=str)
 #from handlers import handlers_list
 
 class Application(tornado.web.Application):
@@ -18,7 +20,7 @@ class Application(tornado.web.Application):
         
         settings = dict(
             static_path=os.path.join(os.path.dirname(__file__), "static"),
-            cookie_secret="32oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+            cookie_secret="thebigrandomsecretofhellobox",
             login_url="/auth/landing",
             debug=True,
         )
@@ -26,8 +28,12 @@ class Application(tornado.web.Application):
 
 def main():
     tornado.options.parse_command_line()
+    tornado.options.parse_config_file(options.config)
+    
+    print "Using config file %s"%options.config
+    
     http_server = tornado.httpserver.HTTPServer(Application())
-    http_server.listen(options.port, address="0.0.0.0")
+    http_server.listen(options.port, address=options.host)
     tornado.ioloop.IOLoop.instance().start()
 
 

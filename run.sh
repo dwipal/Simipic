@@ -1,1 +1,3 @@
-python hellobox.py
+python hellobox.py $*
+
+

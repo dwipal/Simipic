@@ -1,13 +1,16 @@
 from external.boxdotnet import BoxDotNet, BoxDotNetError
 from lib.genericitems import *
 
+import tornado.options
+
 class BoxAuthError(Exception):
     pass
 
 class BoxDriver(object):
     
     def __init__(self, authdata=None):
-        self.api_key = "l6ld3bydad6psc505n4p8uz5j3u3ho7h"
+        self.api_key = tornado.options.box_api_key
+        
         if authdata:
             self.authdata = authdata
             print "Boxdriver authdata %s"%authdata

@@ -1,7 +1,7 @@
 from external.boxdotnet import BoxDotNet, BoxDotNetError
 from lib.genericitems import *
 
-import tornado.options
+from tornado.options import options
 
 class BoxAuthError(Exception):
     pass
@@ -9,7 +9,7 @@ class BoxAuthError(Exception):
 class BoxDriver(object):
     
     def __init__(self, authdata=None):
-        self.api_key = tornado.options.box_api_key
+        self.api_key = options.box_api_key
         
         if authdata:
             self.authdata = authdata

@@ -9,9 +9,23 @@ img.thumb {
     border: 1px solid #efefef;
 }
 
+h1,h2,h3,h4 {
+    color: #444444;
+}
 
 hr {
     border: 0; 
 	background-color: #cdcdcd;	
 	height: 1px;	
+}
+
+ul {
+    list-style-type: none;
+    
+}
+
+li {
+    border-top: 1px solid #efefef;
+    padding: 3px;
+    margin: 2px 0;
 }

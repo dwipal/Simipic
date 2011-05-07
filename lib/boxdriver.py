@@ -19,6 +19,11 @@ class BoxDriver(object):
         box = self._get_box_obj_with_ticket()
         boxtree = None
         
+        token = self.authdata.get('token', None)
+        
+        if not token:
+            raise BoxAuthError("No Token")
+        
         try:
             boxtree = box.get_account_tree(api_key=self.api_key,
                             auth_token = self.authdata['token'], folder_id=root_id,

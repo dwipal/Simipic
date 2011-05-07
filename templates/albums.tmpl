@@ -1,7 +1,15 @@
 #include "templates/base.tmpl"
 
 #def body
-    <h1>$title.replace('_', ' ')</h1>
+    
+    <h2>
+    #if $title:
+        $title.replace('_', ' ')
+    #else
+        Browse Folders
+    #end if
+    </h2>
+    
     #if $files:
         <div id="photogrid">
         #for $file in $files:

@@ -11,9 +11,9 @@ class CoreData(object):
         ret = users.find_one({'username':username})
         return ret
     
-    def save_user(self, username, userdata):
-        users = self.database.users        
-        users.insert(userdata)
+    def save_user(self, userdata):
+        users = self.database.users
+        users.update({'username':userdata['email']}, userdata, True)
         
         
     def get_auth(self, username, service):

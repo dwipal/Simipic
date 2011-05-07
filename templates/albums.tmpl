@@ -14,7 +14,7 @@
         <ul>
         #for $folder in $folders:
             <li>
-                <a href="/albums?root_id=$folder.id">$folder.name</a>
+                <a href="/albums?root_id=$folder.id&username=$cuser['username']">$folder.name</a>
             </li>
         #end for
         </ul>

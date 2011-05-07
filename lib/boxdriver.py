@@ -17,6 +17,7 @@ class BoxDriver(object):
     def get_content(self, root_id):
         
         box = self._get_box_obj_with_ticket()
+        boxtree = None
         
         try:
             boxtree = box.get_account_tree(api_key=self.api_key,
@@ -26,10 +27,15 @@ class BoxDriver(object):
             if bne.status == "not_logged_in":
                 raise BoxAuthError()
         
-        m = {}
-        m['rootfolder'] = self.__get_root_folder(boxtree)
-        m['folders'] = self.__get_folders(boxtree)   
-        m['files'] = self.__get_files(boxtree)   
+        m = {} 
+        if boxtree:
+            m['rootfolder'] = self.__get_root_folder(boxtree)
+            m['folders'] = self.__get_folders(boxtree)   
+            m['files'] = self.__get_files(boxtree)
+        else:
+            m['rootfolder'] = None
+            m['folders'] = None
+            m['files'] = None
         return m
 
     

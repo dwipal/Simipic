@@ -8,26 +8,38 @@ from lib.boxdriver import *
 from external.boxdotnet import BoxDotNet
 
 class AlbumsHandler(BaseHandler):
-    @tornado.web.authenticated
     def get(self):
-        boxauth = self.cdata.get_auth(self.get_current_user()['email'], "box")
+        cuser = self.get_current_user()
+        
+        username = self.get_argument("username", None)
+        if username:
+            
+            if not self.get_current_user() or self.get_current_user()['email'] != username:
+                cuser = self.cdata.get_user(username)
+            
+        if not cuser:
+            self.redirect("/")
+        boxauth = self.cdata.get_auth(cuser['email'], "box")
         
         if boxauth:
             try:
-                return self._get_albums(boxauth)
+                return self._get_albums(cuser, boxauth)
             except BoxAuthError, bae:
                 self.redirect("/auth/box")
         else:
             self.redirect("/auth/box")
         
         
-    def _get_albums(self, boxauth):
+    def _get_albums(self, cuser, boxauth):
         root_id = self.get_argument("root_id", "0")
         
         bd = BoxDriver(boxauth)
         m = bd.get_content(root_id)
-        m['title'] = m['rootfolder']['name']
-        
+        if m['rootfolder']:
+            m['title'] = m['rootfolder']['name']
+        else:
+            m['title'] = "Nothing to see here. Move along.."
+        m['cuser'] = cuser
         return self.render_template("albums", m)
         
         

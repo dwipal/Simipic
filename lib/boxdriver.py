@@ -3,6 +3,16 @@ from lib.genericitems import *
 
 from tornado.options import options
 
+
+"""
+Search
+https://www.box.net/api/1.0/rest?action=search&query=shantanu&page=1&per_page=10&sort=date&direction=desc&auth_token=v4c8obcl3ifsf0kisdpd5xeygpv1l44b&params[]=nozip&params[]=onelevel&folder_id=78545944&api_key=l6ld3bydad6psc505n4p8uz5j3u3ho7h
+
+Updates
+https://www.box.net/api/1.0/rest?action=get_updates&begin_timestamp=1304229600&end_timestamp=1306908000&auth_token=v4c8obcl3ifsf0kisdpd5xeygpv1l44b&params[]=nozip&params[]=onelevel&folder_id=78545944&api_key=l6ld3bydad6psc505n4p8uz5j3u3ho7h
+
+"""
+
 class BoxAuthError(Exception):
     pass
 
@@ -17,7 +27,7 @@ class BoxDriver(object):
         else:
             self.authdata = {}
     
-    def get_content(self, root_id):
+    def get_content(self, root_id, fetch_updates=False):
         
         box = self._get_box_obj_with_ticket()
         boxtree = None
@@ -27,13 +37,19 @@ class BoxDriver(object):
         if not token:
             raise BoxAuthError("No Token")
         
-        try:
-            boxtree = box.get_account_tree(api_key=self.api_key,
-                            auth_token = self.authdata['token'], folder_id=root_id,
+        if fetch_updates:
+            boxtree = box.search(api_key=self.api_key,
+                            auth_token = self.authdata['token'],
+                            folder_id=root_id,
                             params=["nozip", "onelevel"])
-        except BoxDotNetError, bne:
-            if bne.status == "not_logged_in":
-                raise BoxAuthError()
+        else:
+            try:
+                boxtree = box.get_account_tree(api_key=self.api_key,
+                                auth_token = self.authdata['token'], folder_id=root_id,
+                                params=["nozip", "onelevel"])
+            except BoxDotNetError, bne:
+                if bne.status == "not_logged_in":
+                    raise BoxAuthError()
         
         m = {} 
         if boxtree:

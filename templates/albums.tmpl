@@ -27,8 +27,13 @@
         #end for
         </ul>
     #end if
+    
+    
     <hr/>
     <a href="/albums">Home</a>
+    #if $share_link:
+        | <a href="$share_link">Download from Box</a> 
+    #end if
 #end def
 
 #def extra_js

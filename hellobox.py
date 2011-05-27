@@ -30,8 +30,6 @@ def main():
     tornado.options.parse_command_line()
     tornado.options.parse_config_file(options.config)
     
-    print "Using config file %s"%options.config
-    
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port, address=options.host)
     tornado.ioloop.IOLoop.instance().start()

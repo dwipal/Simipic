@@ -12,8 +12,7 @@ class AlbumsHandler(BaseHandler):
         cuser = self.get_current_user()
         
         username = self.get_argument("username", None)
-        if username:
-            
+        if username:            
             if not self.get_current_user() or self.get_current_user()['email'] != username:
                 cuser = self.cdata.get_user(username)
             
@@ -33,10 +32,15 @@ class AlbumsHandler(BaseHandler):
     def _get_albums(self, cuser, boxauth):
         root_id = self.get_argument("root_id", "0")
         
+        fetch_updates = self.get_argument("updates", None) == "1"
+        
+        
         bd = BoxDriver(boxauth)
-        m = bd.get_content(root_id)
+        m = bd.get_content(root_id, fetch_updates = fetch_updates)
         if m['rootfolder']:
             m['title'] = m['rootfolder']['name']
+            m['share_link'] = m['rootfolder']['shared_link']
+        
         else:
             m['title'] = "Nothing to see here. Move along.."
         m['cuser'] = cuser

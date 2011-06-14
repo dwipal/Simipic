@@ -163,7 +163,8 @@ class BoxDotNet(object):
         'logout'            :   'logout_ok',
         'create_folder'     :   'create_ok',
         'upload'            :   'upload_ok',
-        'delete'            :   's_delete_node'
+        'delete'            :   's_delete_node',
+		'public_share'		:   'share_ok'
     }
 
     def __init__(self, browser="firefox"):
@@ -235,7 +236,9 @@ class BoxDotNet(object):
                 #print url
                 #print "--postData----------------------------------------"
                 #print postData
-                f = urllib.urlopen(url + postData)
+                request_url = url + postData
+                print request_url
+                f = urllib.urlopen(request_url)
                 data = f.read()
                 #print "--response----------------------------------------"
                 #print data
@@ -296,6 +299,6 @@ class BoxDotNet(object):
             "multipart/form-data; boundary=%s" % boundary)
         response = urllib2.urlopen(request)
         rspXML = response.read()
-
+		
         return XMLNode.parseXML(rspXML)
 

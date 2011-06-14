@@ -13,7 +13,19 @@
     #if $files:
         <div id="photogrid">
         #for $file in $files:
-            <a href="$file.preview_thumbnail"><img class="thumb" src="$file.large_thumbnail"/></a>
+            #if $file.file_type == $file.FILE_TYPE_IMAGE:
+                <a class="photo" href="$file.preview_thumbnail"><img class="thumb" src="$file.large_thumbnail"/></a>
+            #end if                
+        #end for
+        </div>
+        
+        <br/>
+        <br/>
+        <div>
+        #for $file in $files:
+            #if $file.file_type == $file.FILE_TYPE_VIDEO:
+                <a href="/video?url=$file.download_link"><img class="thumb_xsmall" src="$file.large_thumbnail"/>$file.name</a><br/>
+            #end if
         #end for
         </div>
     #end if
@@ -39,7 +51,7 @@
 #def extra_js
     <script>
         document.addEventListener('DOMContentLoaded', function(){    
-            Code.photoSwipe('a', '#photogrid');
+            Code.photoSwipe('a.photo', '#photogrid');
     
         }, false);
     </script>

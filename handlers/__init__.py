@@ -2,6 +2,7 @@ from handlers.home import *
 from handlers.auth import *
 from handlers.register import *
 from handlers.albums import *
+from handlers.video import *
 
 from model.coredata import CoreData
 
@@ -18,6 +19,7 @@ handlers_list = [
 	
 	(r"/auth/logout", LogoutHandler, dict(cdata=cdata)),
 	(r"/albums", AlbumsHandler, dict(cdata=cdata)),
+	(r"/video", VideoHandler, dict(cdata=cdata)),
 	(r"/auth/box", AuthBoxHandler, dict(cdata=cdata)),
 	(r"/auth/box_done", AuthBoxDoneHandler, dict(cdata=cdata)),
 ]

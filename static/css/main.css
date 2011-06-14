@@ -8,7 +8,12 @@ img.thumb {
     height: 76px;
     border: 1px solid #efefef;
 }
-
+img.thumb_xsmall {
+    margin: 3px;
+    height: 22px;
+    border: 1px solid #efefef;
+    vertical-align: middle;
+}
 h1,h2,h3,h4 {
     color: #444444;
 }

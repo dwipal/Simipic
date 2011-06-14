@@ -5,11 +5,17 @@ from tornado.options import options
 
 
 """
+Auth:
+https://www.box.net/api/1.0/rest?action=get_ticket&api_key=l6ld3bydad6psc505n4p8uz5j3u3ho7h
+
 Search
 https://www.box.net/api/1.0/rest?action=search&query=shantanu&page=1&per_page=10&sort=date&direction=desc&auth_token=v4c8obcl3ifsf0kisdpd5xeygpv1l44b&params[]=nozip&params[]=onelevel&folder_id=78545944&api_key=l6ld3bydad6psc505n4p8uz5j3u3ho7h
 
 Updates
 https://www.box.net/api/1.0/rest?action=get_updates&begin_timestamp=1304229600&end_timestamp=1306908000&auth_token=v4c8obcl3ifsf0kisdpd5xeygpv1l44b&params[]=nozip&params[]=onelevel&folder_id=78545944&api_key=l6ld3bydad6psc505n4p8uz5j3u3ho7h
+
+List:
+https://www.box.net/api/1.0/rest?action=get_account_tree&auth_token=cu675thn7u0jk0vu5n9as4qyup4i8gx6&params[]=nozip&folder_id=78545944&api_key=l6ld3bydad6psc505n4p8uz5j3u3ho7h
 
 """
 
@@ -27,29 +33,27 @@ class BoxDriver(object):
         else:
             self.authdata = {}
     
-    def get_content(self, root_id, fetch_updates=False):
-        
+    def get_content(self, root_id, fetch_updates=False):        
         box = self._get_box_obj_with_ticket()
-        boxtree = None
-        
         token = self.authdata.get('token', None)
         
+        boxtree = None
         if not token:
             raise BoxAuthError("No Token")
         
-        if fetch_updates:
-            boxtree = box.search(api_key=self.api_key,
-                            auth_token = self.authdata['token'],
-                            folder_id=root_id,
-                            params=["nozip", "onelevel"])
-        else:
-            try:
+        try:
+            if fetch_updates:
+                print "Fetching updates..."
+                boxtree = box.get_account_tree(api_key=self.api_key,
+                                auth_token = self.authdata['token'], folder_id=root_id,
+                                params=["nozip"])
+            else:
                 boxtree = box.get_account_tree(api_key=self.api_key,
                                 auth_token = self.authdata['token'], folder_id=root_id,
                                 params=["nozip", "onelevel"])
-            except BoxDotNetError, bne:
-                if bne.status == "not_logged_in":
-                    raise BoxAuthError()
+        except BoxDotNetError, bne:
+            if bne.status == "not_logged_in":
+                raise BoxAuthError()
         
         m = {} 
         if boxtree:
@@ -60,6 +64,10 @@ class BoxDriver(object):
             m['rootfolder'] = None
             m['folders'] = None
             m['files'] = None
+            
+        if fetch_updates:
+            print "Files received for updates: %s"%m['folders']
+            #m['files'] = m['files'][:100]
         return m
 
     
@@ -70,27 +78,72 @@ class BoxDriver(object):
         return None
 
 
+    def __enable_share_permissions(self, boxfile, file_type=BoxFile.FILE_TYPE_FOLDER):
+        box = self._get_box_obj_with_ticket()
+        token = self.authdata.get('token', None)
+
+        if boxfile['shared'] == "0":
+            print "boxfile %s not shared, turning it on"%boxfile
+            
+            target_id = boxfile['id']
+            if file_type == BoxFile.FILE_TYPE_FOLDER:
+                target = 'folder'
+            else:
+                target= 'file'
+                
+                
+            share_ret = box.public_share(api_key=self.api_key,
+                            auth_token = self.authdata['token'],
+                            target=target, target_id=target_id,
+                            emails=["d2ncal@gmail.com"], message="Simipic share",
+                            password="",
+                            params=["nozip"])
+            
     
     def __get_files(self, boxtree): 
         boxtree = boxtree.tree[0]
         rootfolder = boxtree.folder[0]
-
+        
+        self.__enable_share_permissions(rootfolder)
+        
         files = []
         if 'files' in rootfolder.__dict__:
             for f in rootfolder.files[0].file:
-                if f['file_name'].lower().endswith("jpg"):
+                mtype = self.__get_media_type(f['file_name'])
+                
+                if mtype:
                     bf = BoxFile()
                     bf.parent_id = rootfolder['id']
                     bf.name = f['file_name']
                     bf.id = f['id']
                     bf.size = f['size']
+                    bf.file_type = mtype
 
                     bf.large_thumbnail = f['large_thumbnail']
                     bf.preview_thumbnail = f['preview_thumbnail']
+                    
+                    if f['shared'] == "1":
+                        bf.shared_link = f['shared_link']
+                        bf.download_link = "https://www.box.net/api/1.0/download/%s/%s"%(self.authdata['token'], bf.id)
                     files.append(bf)
-                
+                    
+                    if mtype == BoxFile.FILE_TYPE_VIDEO:
+                        self.__enable_share_permissions(f, mtype)
+                else:
+                    print "Skipping non-image file %s"%f['file_name']
+        else:
+            print "No files in rootfolder"
         return files
     
+    
+    def __get_media_type(self, filename):
+        filename = filename.lower()[-3:]
+        if filename in ['jpg']:
+            return BoxFile.FILE_TYPE_IMAGE
+        elif filename in ['mov', 'mp4', 'mpg', 'avi', 'flv', "3gp", "3g2"]:
+            return BoxFile.FILE_TYPE_VIDEO
+    
+        return None
     
     def __get_folders(self, boxtree):
         folders = []        
@@ -105,6 +158,7 @@ class BoxDriver(object):
                 bf.name = f['name']
                 bf.id = f['id']
                 bf.size = f['size']
+                bf.file_type = BoxFolder.FILE_TYPE_FOLDER
 
                 bf.filecount = f['file_count']
                 

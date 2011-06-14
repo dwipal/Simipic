@@ -1,0 +1,28 @@
+#include "templates/base.tmpl"
+
+#def body
+    <div style="margin: auto; text-align: center;">
+    
+    <div class="video-js-box" style="margin: auto">
+    <!-- Using the Video for Everybody Embed Code http://camendesign.com/code/video_for_everybody -->
+    <video class="video-js" width="640" controls preload autoplay poster="/static/img/video_poster.jpg">
+      <source src="$video_url" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' />
+    </video>
+
+    </div>
+
+    <p>
+      <a href="$video_url">Download Video</a>,
+    </p>
+
+    </div>
+#end def
+
+
+#def extra_js
+
+  <script type="text/javascript" charset="utf-8">
+    // Add VideoJS to all video tags on the page when the DOM is ready
+    VideoJS.setupAllWhenReady();
+  </script>    
+#end def
